@@ -1,0 +1,46 @@
+- name: Actualizar el índice de paquetes
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Instalar nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+- name: Copiar archivo remoto a servidor remoto
+  ansible.builtin.copy:
+    remote_src: yes
+    src: /etc/nginx/nginx.conf
+    dest: /etc/nginx/nginx.conf.bak
+    owner: root
+    mode: "0600"
+
+- name: Copiar archivo local a servidor remoto
+  ansible.builtin.copy:
+    src: ./files/nginx.conf
+    dest: /etc/nginx/sites-enabled/default
+    mode: '0644'
+
+- name: Reiniciar nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+
+- name: Crear la página principal
+  ansible.builtin.template:
+    src: ./templates/index.html.j2
+    dest: /var/www/html/index.html
+
+- name: Borrar la página predeterminada de Debian
+  ansible.builtin.file:
+    path: /var/www/html/index.nginx-debian.html
+    state: absent
+
+- name: Insertar o actualizar HTML
+  ansible.builtin.blockinfile:
+    path: /var/www/html/index.html
+    marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
+    insertbefore: "</body>"
+    block: |
+      <hr>
+      <p>Actualizado: {{ ansible_date_time.iso8601 }}.</p>

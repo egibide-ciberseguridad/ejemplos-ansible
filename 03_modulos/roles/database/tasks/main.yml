@@ -1,0 +1,19 @@
+- name: Actualizar el índice de paquetes
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Instalar MariaDB
+  ansible.builtin.apt:
+    name: mariadb-server
+    state: present
+
+- name: Cambiar el puerto de MariaDB al 5000
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mariadb.cnf
+    regexp: '^port.*='
+    line: "port = 5000"
+
+- name: Reiniciar MariaDB
+  ansible.builtin.service:
+    name: mariadb
+    state: restarted
