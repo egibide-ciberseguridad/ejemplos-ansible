@@ -1,0 +1,18 @@
+---
+- name: Mostrar el valor de las variables
+  hosts: all
+  gather_facts: false
+  vars:
+    variable_global: "prueba_global"
+  tasks:
+    - name: Variable global
+      ansible.builtin.debug:
+        msg: "{{ variable_global }}"
+    - name: Variable de grupo
+      ansible.builtin.debug:
+        msg: "{{ variable_grupo }}"
+    - name: Variable de host
+      ansible.builtin.debug:
+        msg: "{{ http_port }}"
+  roles:
+    - ejemplo

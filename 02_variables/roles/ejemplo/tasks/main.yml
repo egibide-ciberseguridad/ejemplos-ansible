@@ -1,0 +1,3 @@
+- name: Variable de rol
+  ansible.builtin.debug:
+    msg: "{{ variable_rol }}"
