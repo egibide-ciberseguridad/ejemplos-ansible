@@ -1,0 +1,8 @@
+- name: Actualizar el índice de paquetes
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Instalar nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
