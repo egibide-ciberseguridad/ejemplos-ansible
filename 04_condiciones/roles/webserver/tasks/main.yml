@@ -1,0 +1,23 @@
+- name: Actualizar el índice de paquetes
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Instalar nginx y registrar el resultado
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+- name: Comprobar si existe la página principal
+  ansible.builtin.stat:
+    path: /var/www/html/index.html
+  register: pagina_principal
+
+- name: Mostrar si existe la página principal
+  ansible.builtin.debug:
+    msg: "Hay página principal: {{ (pagina_principal.stat.exists) | ternary('Sí', 'No') }}"
+
+- name: Crear la página principal si no existe
+  ansible.builtin.template:
+    src: ./templates/index.html.j2
+    dest: /var/www/html/index.html
+  when: pagina_principal.stat.exists == false

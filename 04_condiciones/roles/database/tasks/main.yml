@@ -1,0 +1,31 @@
+- name: Actualizar el índice de paquetes
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Instalar MariaDB
+  ansible.builtin.apt:
+    name:
+      - mariadb-server
+      - python3-mysqldb
+    state: present
+
+- name: Contar los usuarios de la base de datos
+  community.mysql.mysql_query:
+    login_db: mysql
+    query: SELECT count(*) as numero FROM user
+  register: consulta_usuarios
+
+- name: Definir una variable con el recuento
+  ansible.builtin.set_fact:
+    numero_usuarios: "{{ consulta_usuarios.query_result[0][0].numero }}"
+
+- name: Mostrar el número de usuarios
+  ansible.builtin.debug:
+    msg: "Hay {{ numero_usuarios }} usuarios."
+  failed_when: numero_usuarios|int < 3
+
+- name: Crear una base de datos de prueba
+  community.mysql.mysql_query:
+    login_db: mysql
+    query: CREATE DATABASE prueba
+  ignore_errors: yes
