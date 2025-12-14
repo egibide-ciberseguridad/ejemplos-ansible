@@ -6,11 +6,12 @@
   ansible.builtin.apt:
     name:
       - mariadb-server
-      - python3-mysqldb
+      - python3-pymysql
     state: present
 
 - name: Contar los usuarios de la base de datos
   community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
     login_db: mysql
     query: SELECT count(*) as numero FROM user
   register: consulta_usuarios
@@ -26,6 +27,7 @@
 
 - name: Crear una base de datos de prueba
   community.mysql.mysql_query:
+    login_unix_socket: /var/run/mysqld/mysqld.sock
     login_db: mysql
     query: CREATE DATABASE prueba
   ignore_errors: yes
